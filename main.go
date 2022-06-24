@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/kaizendorks/terraform-cloud-exporter/internal/collector"
-	"github.com/kaizendorks/terraform-cloud-exporter/internal/setup"
+	"github.com/pacoguzman/terraform-cloud-exporter/internal/collector"
+	"github.com/pacoguzman/terraform-cloud-exporter/internal/setup"
 
 	"github.com/go-kit/kit/log/level"
 

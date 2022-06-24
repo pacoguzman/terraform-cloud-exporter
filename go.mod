@@ -1,4 +1,4 @@
-module github.com/kaizendorks/terraform-cloud-exporter
+module github.com/pacoguzman/terraform-cloud-exporter
 
 go 1.18
 

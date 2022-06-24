@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/kaizendorks/terraform-cloud-exporter/internal/setup"
+	"github.com/pacoguzman/terraform-cloud-exporter/internal/setup"
 
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"

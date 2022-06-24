@@ -3,7 +3,7 @@ package collector
 import (
 	"context"
 
-	"github.com/kaizendorks/terraform-cloud-exporter/internal/setup"
+	"github.com/pacoguzman/terraform-cloud-exporter/internal/setup"
 
 	"github.com/prometheus/client_golang/prometheus"
 )

@@ -1,9 +1,9 @@
 # Terraform Cloud/Enterprise Exporter
 >Prometheus exporter for Terraform Cloud/Enterprise metrics.
 
-[![Go Test](https://github.com/kaizendorks/terraform-cloud-exporter/workflows/Go%20Test/badge.svg)](https://github.com//kaizendorks/terraform-cloud-exporter/actions?workflow=Go%20Test)
-[![GitHub release](https://img.shields.io/github/release/kaizendorks/terraform-cloud-exporter.svg)](https://github.com//kaizendorks/terraform-cloud-exporter/releases/latest)
-[![Docker Release](https://github.com/kaizendorks/terraform-cloud-exporter/workflows/Docker%20Release/badge.svg)](https://github.com//kaizendorks/terraform-cloud-exporter/actions?workflow=Docker%20Release)
+[![Go Test](https://github.com/pacoguzman/terraform-cloud-exporter/workflows/Go%20Test/badge.svg)](https://github.com//pacoguzman/terraform-cloud-exporter/actions?workflow=Go%20Test)
+[![GitHub release](https://img.shields.io/github/release/pacoguzman/terraform-cloud-exporter.svg)](https://github.com//pacoguzman/terraform-cloud-exporter/releases/latest)
+[![Docker Release](https://github.com/pacoguzman/terraform-cloud-exporter/workflows/Docker%20Release/badge.svg)](https://github.com//pacoguzman/terraform-cloud-exporter/actions?workflow=Docker%20Release)
 
 
 ## Sample Dashboard
@@ -19,7 +19,7 @@
 
 #### Native
 
-        go get -u github.com/kaizendorks/terraform-cloud-exporter
+        go get -u github.com/pacoguzman/terraform-cloud-exporter
 
         terraform-cloud-exporter \
             --organizations=<YourOrg1>,<YourOrg2>,... \

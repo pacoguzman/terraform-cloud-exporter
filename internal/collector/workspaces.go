@@ -6,7 +6,7 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
-	"github.com/kaizendorks/terraform-cloud-exporter/internal/setup"
+	"github.com/pacoguzman/terraform-cloud-exporter/internal/setup"
 
 	tfe "github.com/hashicorp/go-tfe"
 
