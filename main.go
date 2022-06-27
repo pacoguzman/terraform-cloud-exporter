@@ -15,6 +15,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/prometheus/exporter-toolkit/web"
 )
 
 // Build information. Populated at build-time via ldflags.
@@ -56,6 +57,16 @@ func newHandler(metrics collector.Metrics, config setup.Config) http.HandlerFunc
 	}
 }
 
+var landingPage = []byte(
+	`<html>
+		<head><title>Terraform Cloud/Enterprise Exporter</title></head>
+		<body>
+		<h1>Terraform Cloud/Enterprise Exporter</h1>
+		<p><a href="/metrics">Metrics</a></p>
+		</body>
+	</html>
+`)
+
 func main() {
 	config := setup.NewConfig()
 	level.Info(config.Logger).Log("msg", "Starting tf_exporter", "version", Version, "revision", Commit)
@@ -64,17 +75,12 @@ func main() {
 	handlerFunc := newHandler(collector.NewMetrics(), config)
 	http.Handle("/metrics", promhttp.InstrumentMetricHandler(prometheus.DefaultRegisterer, handlerFunc))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`<html>
-			<head><title>Terraform Cloud/Enterprise Exporter</title></head>
-			<body>
-			<h1>Terraform Cloud/Enterprise Exporter</h1>
-			<p><a href="/metrics">Metrics</a></p>
-			</body>
-			</html>`))
+		w.Write(landingPage)
 	})
 
 	level.Info(config.Logger).Log("msg", "Listening on address", "address", config.ListenAddress)
-	if err := http.ListenAndServe(config.ListenAddress, nil); err != nil {
+	srv := &http.Server{Addr: config.ListenAddress}
+	if err := web.ListenAndServe(srv, "", config.Logger); err != nil {
 		level.Error(config.Logger).Log("msg", "Error starting HTTP server", "err", err)
 		os.Exit(1)
 	}
