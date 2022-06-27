@@ -9,6 +9,8 @@ import (
 
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/alecthomas/kong"
 
@@ -89,14 +91,7 @@ func (c *Config) setupClient() {
 		level.Info(c.Logger).Log("msg", "Overwritten Terraform API address", "address", c.APIAddress)
 	}
 
-	if c.APIInsecureSkipVerify {
-		config.HTTPClient = &http.Client{
-			Transport: &http.Transport{
-				TLSClientConfig: &tls.Config{InsecureSkipVerify: c.APIInsecureSkipVerify},
-			},
-		}
-		level.Warn(c.Logger).Log("msg", "HTTP InsecureSkipVerify is enabled.")
-	}
+	config.HTTPClient = c.setupHTTPClient()
 
 	client, err := tfe.NewClient(config)
 	if err != nil {
@@ -104,4 +99,48 @@ func (c *Config) setupClient() {
 		os.Exit(1)
 	}
 	c.Client = *client
+}
+
+func (c *Config) setupHTTPClient() *http.Client {
+	reg := prometheus.DefaultRegisterer
+
+	inFlightGauge := prometheus.NewGauge(prometheus.GaugeOpts{
+		Name: "client_api_in_flight_requests",
+		Help: "A gauge of in-flight requests for the wrapped client.",
+	})
+
+	counter := prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "client_api_requests_total",
+			Help: "A counter for requests from the wrapped client.",
+		},
+		[]string{"code", "method"},
+	)
+
+	histVec := prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:    "client_api_request_duration_seconds",
+			Help:    "A histogram of request latencies.",
+			Buckets: prometheus.DefBuckets,
+		},
+		[]string{"method"},
+	)
+
+	reg.MustRegister(counter, histVec, inFlightGauge)
+
+	tlsConfig := tls.Config{}
+
+	if c.APIInsecureSkipVerify {
+		tlsConfig = tls.Config{InsecureSkipVerify: c.APIInsecureSkipVerify}
+	}
+
+	roundTripper := promhttp.InstrumentRoundTripperInFlight(inFlightGauge,
+		promhttp.InstrumentRoundTripperCounter(counter,
+			promhttp.InstrumentRoundTripperDuration(histVec, &http.Transport{
+				TLSClientConfig: &tlsConfig,
+			}),
+		),
+	)
+
+	return &http.Client{Transport: roundTripper}
 }
